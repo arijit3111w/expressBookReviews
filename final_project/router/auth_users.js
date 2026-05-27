@@ -55,16 +55,19 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   const isbn = req.params.isbn;
   let book = books[isbn];
   if (book) {
-      let review = req.query.review;
+      let review = req.query.review || req.body.review;
       let reviewer = req.session.authorization['username'];
       if(review) {
           book.reviews[reviewer] = review;
           books[isbn] = book;
       }
-      res.send(`The review for the book with ISBN ${isbn} has been added/updated.`);
+      res.json({
+          message: "Review added/updated successfully",
+          reviews: book.reviews
+      });
   }
   else{
-      res.send("Unable to find book!");
+      res.status(404).json({message: "Unable to find book!"});
   }
 });
 
